@@ -1,0 +1,45 @@
+import json
+
+def load_questions(filename):
+    with open(filename, 'r') as file:
+        return json.load(file)
+
+def ask_question(q):
+    print("\n" + q["question"])
+    for i, option in enumerate(q["options"], start=1):
+        print(f"{i}. {option}")
+    while True:
+        try:
+            choice = int(input("Your answer (1-4): "))
+            if 1 <= choice <= len(q["options"]):
+                return q["options"][choice - 1] == q["answer"]
+            else:
+                print("Please choose a number between 1 and 4.")
+        except ValueError:
+            print("Enter a valid number.")
+
+def run_quiz():
+    questions = load_questions("questions.json")
+
+    print("Available Categories:")
+    for i, category in enumerate(questions.keys(), start=1):
+        print(f"{i}. {category}")
+
+    choice = int(input("Select a category: "))
+    category_name = list(questions.keys())[choice - 1]
+    selected_questions = questions[category_name]
+
+    print(f"\nStarting quiz in category: {category_name}\n")
+    score = 0
+
+    for q in selected_questions:
+        if ask_question(q):
+            print("✅ Correct!")
+            score += 1
+        else:
+            print(f"❌ Wrong! Correct answer: {q['answer']}")
+
+    print(f"\nQuiz complete! Your score: {score}/{len(selected_questions)}")
+
+if __name__ == "__main__":
+    run_quiz()
